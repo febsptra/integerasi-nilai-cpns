@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Input Sederhana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        input {
+            margin: 5px 0;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kalkulator Integerasi Nilai SKD + SKB</h1>
+    <form id="inputForm">
+        <label for="nama">Nama:</label><br>
+        <input type="text" id="nama" required><br>
+        <label for="nilaiSkd">Nilai SKD CAT (maks: 550):</label><br>
+        <input type="number" id="nilaiSkd" max="550" required><br>
+        <label for="nilaiSkb">Nilai SKB CAT (maks: 500):</label><br>
+        <input type="number" id="nilaiSkb" max="500" required><br>
+        <span id="errorMessage" class="error"></span><br>
+        <button type="button" onclick="tambahData()">Tambahkan Data</button>
+    </form>
+<hr>
+    <button onclick="urutkanHasil()">Urutkan Berdasarkan Hasil (Tertinggi ke Terkecil)</button>
+
+    <table id="hasilTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Nilai SKD</th>
+                <th>40%</th>
+                <th>Nilai SKB</th>
+                <th>60%</th>
+                <th>Hasil</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        function tambahData() {
+            const errorMessage = document.getElementById("errorMessage");
+            errorMessage.textContent = "";
+
+            // Ambil data dari input
+            const nama = document.getElementById("nama").value;
+            const nilaiSkd = parseInt(document.getElementById("nilaiSkd").value);
+            const nilaiSkb = parseInt(document.getElementById("nilaiSkb").value);
+
+            // Validasi input
+            if (!nama) {
+                errorMessage.textContent = "Nama tidak boleh kosong.";
+                return;
+            }
+            if (isNaN(nilaiSkd) || nilaiSkd < 0 || nilaiSkd > 550) {
+                errorMessage.textContent = "Nilai SKD harus di antara 0 dan 550.";
+                return;
+            }
+            if (isNaN(nilaiSkb) || nilaiSkb < 0 || nilaiSkb > 500) {
+                errorMessage.textContent = "Nilai SKB harus di antara 0 - 500.";
+                return;
+            }
+
+            // Hitung nilai 40%, 60%, dan total hasil
+            const nilai40 = ((nilaiSkd / 550) * 100) * 0.4;
+            const nilai60 = ((nilaiSkb / 500) * 100) * 0.6;
+            const hasil = nilai40 + nilai60;
+
+            // Tambahkan data ke tabel
+            const tabelBody = document.querySelector("#hasilTable tbody");
+            const row = tabelBody.insertRow();
+
+            row.innerHTML = `
+                <td></td>
+                <td>${nama}</td>
+                <td>${nilaiSkd}</td>
+                <td>${nilai40.toFixed(2)}</td>
+                <td>${nilaiSkb}</td>
+                <td>${nilai60.toFixed(2)}</td>
+                <td>${hasil.toFixed(2)}</td>
+                <td><button onclick="hapusBaris(this)">Hapus</button></td>
+            `;
+
+            // Perbarui nomor kolom
+            perbaruiNomor();
+
+            // Reset form
+            document.getElementById("inputForm").reset();
+        }
+
+        function urutkanHasil() {
+            const tabelBody = document.querySelector("#hasilTable tbody");
+            const rows = Array.from(tabelBody.rows);
+
+            // Urutkan baris berdasarkan kolom "Hasil" (kolom ke-6, index 6)
+            rows.sort((a, b) => {
+                const hasilA = parseFloat(a.cells[6].textContent);
+                const hasilB = parseFloat(b.cells[6].textContent);
+                return hasilB - hasilA;
+            });
+
+            // Hapus semua baris dan tambahkan kembali dalam urutan baru
+            tabelBody.innerHTML = '';
+            rows.forEach(row => tabelBody.appendChild(row));
+
+            // Perbarui nomor kolom
+            perbaruiNomor();
+        }
+
+        function hapusBaris(button) {
+            // Hapus baris dari tabel
+            const row = button.parentElement.parentElement;
+            row.remove();
+
+            // Perbarui nomor kolom setelah penghapusan
+            perbaruiNomor();
+        }
+
+        function perbaruiNomor() {
+            const tabelBody = document.querySelector("#hasilTable tbody");
+            Array.from(tabelBody.rows).forEach((row, index) => {
+                row.cells[0].textContent = index + 1; // Nomor kolom pertama
+            });
+        }
+    </script>
+</body>
+<br>
+<hr>
+*Jika ada bug/kesalahan aplikasi silahkan laporkan ke <br>
+@credit : <a href="https://www.instagram.com/febsptraa"> Febsptra </a>
+</html>
